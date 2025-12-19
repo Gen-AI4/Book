@@ -1,0 +1,11 @@
+{
+  "include": [
+    "frontend/docs/**/*"
+  ],
+  "exclude": [
+    "node_modules/**/*",
+    ".git/**/*",
+    ".docusaurus/**/*",
+    "build/**/*"
+  ]
+}

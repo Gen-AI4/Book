@@ -196,6 +196,21 @@ If ALL true, suggest:
 
 Wait for consent; never auto-create ADRs. Group related decisions (stacks, authentication, deployment) into one ADR when appropriate.
 
+## Active Technologies
+
+- JavaScript/Node.js + Docusaurus 3.x (1-docusaurus-textbook-init)
+- remark-math + rehype-katex (1-docusaurus-textbook-init)
+- @docusaurus/theme-mermaid (1-docusaurus-textbook-init)
+- Qdrant Cloud + Neon Serverless Postgres (1-docusaurus-textbook-init)
+
+## Recent Changes
+
+- 1-docusaurus-textbook-init: Added JavaScript/Node.js + Docusaurus 3.x
+- 1-docusaurus-textbook-init: Added remark-math + rehype-katex
+- 1-docusaurus-textbook-init: Added @docusaurus/theme-mermaid
+
+**Last updated**: 2025-12-19
+
 ## Basic Project Structure
 
 - `.specify/memory/constitution.md` — Project principles

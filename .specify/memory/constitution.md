@@ -1,55 +1,40 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!-- SYNC IMPACT REPORT:
+Version change: N/A -> 1.0.0
+Added sections: All principles and sections as per project requirements
+Removed sections: Template placeholders
+Modified principles: N/A (new constitution)
+Templates requiring updates: N/A (new project)
+Follow-up TODOs: None
+-->
+# Textbook for Teaching Physical AI & Humanoid Robotics Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### Sim-to-Real Transfer Focus
+Every tutorial and concept must bridge digital AI and embodied physical intelligence; All examples should demonstrate practical application on target hardware platforms (Unitree robots, NVIDIA Jetson); Hardware limitations (VRAM, latency) must be explicitly addressed in all implementations
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### Multi-Modal Learning Approach
+Content integrates ROS 2, Gazebo, NVIDIA Isaac, and VLA technologies; Each module builds upon previous concepts while maintaining standalone accessibility; Practical code examples accompany theoretical explanations
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### Test-First for Educational Content (NON-NEGOTIABLE)
+Every tutorial includes runnable code examples; Tests written → Content validated → Examples work → Then publish; All code snippets must be verified in both simulated and real environments
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### Hardware-Aware Implementation
+All code examples consider target hardware constraints (RTX 40-series, Jetson Orin, Unitree platforms); Resource optimization is prioritized; Performance benchmarks are included for each major implementation
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### Interactive Learning Experience
+Docusaurus-based textbook includes embedded RAG chatbot for context-aware Q&A; Code examples are interactive and copy-paste runnable; Real-world robotics applications are emphasized over theoretical concepts
 
-### [PRINCIPLE_6_NAME]
+### Modular Curriculum Design
+Four distinct technical modules (ROS 2, Gazebo, NVIDIA Isaac, VLA) that can be taught independently; Cross-module dependencies are clearly documented; Each module has specific learning outcomes and assessment criteria
 
+## Technology Stack Requirements
+Frontend: Docusaurus (React/MDX); Backend: Python, FastAPI; Database: Neon (Serverless Postgres); Vector Search: Qdrant Cloud; AI Integration: OpenAI Agents/ChatKit SDK; Simulation: ROS 2, Gazebo, Isaac Sim
 
-[PRINCIPLE__DESCRIPTION]
-
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
-
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Development Workflow
+Content development follows Spec-Driven Development; All code examples tested on target hardware configurations; Documentation and code maintained in parallel; Peer review required for all curriculum additions
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+All curriculum content must comply with hardware constraints and technology stack; Changes to core modules require architectural review; Educational effectiveness measured through student feedback and practical outcomes
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-12-19 | **Last Amended**: 2025-12-19

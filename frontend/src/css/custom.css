@@ -1,0 +1,60 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+@import url('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css');
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #2e8555;
+  --ifm-color-primary-dark: #29784c;
+  --ifm-color-primary-darker: #277148;
+  --ifm-color-primary-darkest: #205d3b;
+  --ifm-color-primary-light: #33925d;
+  --ifm-color-primary-lighter: #359962;
+  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #25c2a0;
+  --ifm-color-primary-dark: #21af90;
+  --ifm-color-primary-darker: #1fa588;
+  --ifm-color-primary-darkest: #1a8870;
+  --ifm-color-primary-light: #29d5b0;
+  --ifm-color-primary-lighter: #32d8b4;
+  --ifm-color-primary-lightest: #4fddbf;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Custom hardware admonition styling */
+.admonition-hardware {
+  border-left: 4px solid #f59f00; /* Orange accent */
+  background-color: #fff3cd; /* Light yellow background */
+  border-color: #f59f00;
+}
+
+[data-theme='dark'] .admonition-hardware {
+  background-color: #4a3f0f; /* Dark yellow background */
+  border-color: #ffa726; /* Lighter orange for dark mode */
+}
+
+.admonition-hardware .admonition-heading {
+  color: #856404; /* Darker orange for heading */
+}
+
+[data-theme='dark'] .admonition-hardware .admonition-heading {
+  color: #ffa726; /* Light orange for dark mode heading */
+}
+
+.admonition-hardware .admonition-icon {
+  color: #f59f00; /* Orange icon */
+}
+
+[data-theme='dark'] .admonition-hardware .admonition-icon {
+  color: #ffa726; /* Lighter orange icon for dark mode */
+}
