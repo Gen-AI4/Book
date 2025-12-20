@@ -24,7 +24,7 @@ const getApiBaseUrl = (): string => {
   return (
     process.env.REACT_APP_API_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
-    'http://localhost:8000'
+    'https://ahmedali021-the-book.hf.space'
   );
 };
 
