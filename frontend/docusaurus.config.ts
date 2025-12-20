@@ -49,6 +49,7 @@ const config: Config = {
           rehypePlugins: [require('rehype-katex')],
           sidebarCollapsible: true,
         },
+        blog: false, // Explicitly disable blog functionality since blog directory was removed
         theme: {
           customCss: [
             './src/css/custom.css',
