@@ -1,0 +1,9 @@
+cohere
+qdrant-client
+python-dotenv
+langchain-text-splitters
+requests
+beautifulsoup4
+openai
+slowapi
+prometheus-client
