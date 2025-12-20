@@ -2,8 +2,11 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
+# Install git (needed for some dependencies)
+RUN apt-get update && apt-get install -y git
+
 # Copy requirements first to leverage Docker layer caching
-COPY backend/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the backend directory

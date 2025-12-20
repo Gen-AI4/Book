@@ -5,7 +5,6 @@ colorFrom: blue
 colorTo: red
 sdk: docker
 app_file: app.py
-pinned: false
 ---
 
 # The Book - AI Teaching Assistant Backend
@@ -43,16 +42,3 @@ The following environment variables need to be configured in your Hugging Face S
 1. The backend is automatically started when the Space loads
 2. The API endpoints are available at the root URL of the Space
 3. You can test the API using the `/docs` endpoint for interactive documentation
-
-## Architecture
-
-The system follows a service-oriented architecture:
-- `main.py`: FastAPI application with endpoints
-- `models.py`: Pydantic models for request/response validation
-- `services/`: Business logic services
-  - `context_retrieval_service.py`: Qdrant integration and context retrieval
-  - `openai_service.py`: OpenAI API integration
-  - `chat_service.py`: Orchestrates the RAG flow
-- `config.py`: Configuration and environment variables
-- `utils.py`: Utility functions
-- `middleware.py`: Rate limiting and other middleware
