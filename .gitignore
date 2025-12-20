@@ -79,3 +79,4 @@ htmlcov/
 .coverage.*
 .pyup.yml
 .bandit
+nul
