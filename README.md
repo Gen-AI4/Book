@@ -1,6 +1,6 @@
-# Agent API Backend (The Brain)
+# The Book - AI Teaching Assistant Backend
 
-This is the FastAPI backend that serves as the "Mind" of the textbook. It uses OpenAI Chat Completions for reasoning and Qdrant for context retrieval (RAG system).
+This is the backend service for The Book AI Teaching Assistant, a Physical AI system with RAG capabilities. This FastAPI backend serves as the "Mind" of the textbook. It uses OpenAI Chat Completions for reasoning and Qdrant for context retrieval (RAG system).
 
 ## Prerequisites
 
@@ -110,3 +110,19 @@ The system follows a service-oriented architecture:
 - `QDRANT_COLLECTION_NAME`: Name of the collection to query
 - `COHERE_API_KEY`: Your Cohere API key
 - `ENVIRONMENT`: Environment (development, staging, production) - defaults to "development"
+
+## Hugging Face Space Deployment
+
+This backend is configured to run on Hugging Face Spaces. The following files are used for deployment:
+
+- `app.py`: Main entry point for the Hugging Face Space
+- `requirements.txt`: Python dependencies
+- `backend/`: Directory containing the main backend application
+
+## Endpoints
+
+When deployed on Hugging Face Spaces, the API endpoints are available at:
+- `GET /` - Health check
+- `GET /health` - Health status
+- `GET /docs` - Interactive API documentation (Swagger UI)
+- `POST /chat` - Main chat endpoint for RAG functionality

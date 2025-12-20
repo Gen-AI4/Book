@@ -1,0 +1,8 @@
+runtime:
+  sdk: docker
+  hardware: cpu-basic
+  secrets:
+    - OPENAI_API_KEY
+    - QDRANT_API_KEY
+    - COHERE_API_KEY
+    - QDRANT_URL
