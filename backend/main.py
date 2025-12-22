@@ -5,7 +5,8 @@ from services.chat_service import ChatService
 from logging_config import setup_logging
 from metrics import add_metrics_middleware, metrics_endpoint
 import logging
-# Setup logging
+
+  # Setup logging
 setup_logging()
 
 app = FastAPI(title="Agent API Backend", description="The Brain of the textbook with RAG capabilities")
@@ -13,11 +14,10 @@ app = FastAPI(title="Agent API Backend", description="The Brain of the textbook 
 # Add metrics middleware
 add_metrics_middleware(app)
 
-
-# Configure CORS middleware
+  # Configure CORS middleware
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+      CORSMiddleware,
+      allow_origins=[
         "http://localhost:3000",  # Docusaurus default port
         "http://localhost:3001",  # Alternative Docusaurus port
         "http://127.0.0.1:3000",  # Alternative localhost format
@@ -29,11 +29,11 @@ app.add_middleware(
         "https://the-book-git-1-docusaurus-t-7ead23-ahmed-alis-projects-4d34af07.vercel.app",  # Your Vercel frontend URL
         "https://*.vercel.app",  # Allow all Vercel domains
         "https://the-book-iota.vercel.app",  # If you have a custom domain
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+      ],
+      allow_credentials=True,
+      allow_methods=["*"],
+      allow_headers=["*"],
+  )
 
 # Initialize chat service
 chat_service = ChatService()
@@ -51,7 +51,7 @@ async def metrics():
     return await metrics_endpoint()
 
 @app.post("/chat",
-            summary="Chat with the Physical AI Teaching Assistant",
+           summary="Chat with the Physical AI Teaching Assistant",
             description="Send a message to the AI assistant and receive a response based on the textbook content.",
             responses={
                 200: {
