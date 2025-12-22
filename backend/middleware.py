@@ -1,7 +1,14 @@
 from fastapi import FastAPI
 
-# Placeholder for rate limiting functionality
-limiter = None
+# Mock limiter object to handle decorators without functionality
+class MockLimiter:
+    def limit(self, rate):
+        # Return a decorator that does nothing (passes through the function)
+        def decorator(func):
+            return func
+        return decorator
+
+limiter = MockLimiter()
 
 def add_rate_limiting(app: FastAPI):
     """
