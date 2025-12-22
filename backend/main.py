@@ -72,13 +72,12 @@ async def metrics():
                     }
                 }
             })
-@limiter.limit("5/minute")  # Limit to 5 requests per minute per IP
-async def chat_endpoint(request: Request, chat_request: ChatRequest = Body(...)):
+#@limiter.limit("5/minute")  # Temporarily commented out due to conflict
+async def chat_endpoint(chat_request: ChatRequest):
       """
       Chat endpoint that processes user messages and returns AI-generated responses.
 
       Args:
-          request: FastAPI Request object (for rate limiting)
           chat_request: The chat request containing the message and optional history
 
       Returns:
