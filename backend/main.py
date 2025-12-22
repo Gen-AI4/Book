@@ -1,9 +1,8 @@
-from fastapi import FastAPI, HTTPException, Request, Body
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from models import ChatRequest, ChatResponse
+from models import ChatRequest, ChatResponse 
 from services.chat_service import ChatService
 from logging_config import setup_logging
-from middleware import add_rate_limiting, limiter
 from metrics import add_metrics_middleware, metrics_endpoint
 import logging
 
@@ -15,8 +14,6 @@ app = FastAPI(title="Agent API Backend", description="The Brain of the textbook 
 # Add metrics middleware
 add_metrics_middleware(app)
 
-# Add rate limiting
-# add_rate_limiting(app)
 
 # Configure CORS middleware
 app.add_middleware(
@@ -72,7 +69,6 @@ async def metrics():
                     }
                 }
             })
-#@limiter.limit("5/minute")  # Temporarily commented out due to conflict
 async def chat_endpoint(chat_request: ChatRequest):
       """
       Chat endpoint that processes user messages and returns AI-generated responses.
