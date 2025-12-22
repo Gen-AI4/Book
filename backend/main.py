@@ -16,7 +16,7 @@ app = FastAPI(title="Agent API Backend", description="The Brain of the textbook 
 add_metrics_middleware(app)
 
 # Add rate limiting
-add_rate_limiting(app)
+# add_rate_limiting(app)
 
 # Configure CORS middleware
 app.add_middleware(
