@@ -29,7 +29,7 @@ app.add_middleware(
         "http://localhost:3004",  # Additional common port
         "https://the-book-git-1-docusaurus-t-7ead23-ahmed-alis-projects-4d34af07.vercel.app",  # Your Vercel frontend URL
         "https://*.vercel.app",  # Allow all Vercel domains
-        "https://the-book-iota.vercel.app/",  # If you have a custom domain
+        "https://the-book-iota.vercel.app",  # If you have a custom domain
     ],
     allow_credentials=True,
     allow_methods=["*"],
