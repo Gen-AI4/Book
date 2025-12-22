@@ -9,3 +9,4 @@ beautifulsoup4
 openai
 prometheus-client
 pydantic-settings
+slowapi
