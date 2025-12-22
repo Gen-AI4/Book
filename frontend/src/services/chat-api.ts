@@ -1,7 +1,7 @@
-// Define TypeScript interfaces
+// TypeScript interfaces
 export interface ChatRequest {
   message: string;
-  session_id?: string;
+  session_id?: string; // optional for multi-turn sessions
   timestamp?: string;
 }
 
@@ -18,47 +18,54 @@ export interface ChatError {
   timestamp: string;
 }
 
-// Get API base URL from environment or default
+// Browser-safe API URL
 const getApiBaseUrl = (): string => {
-  // For Docusaurus, we use NEXT_PUBLIC_API_URL equivalent or default
-  return (
-    process.env.REACT_APP_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    'https://ahmedali021-the-book.hf.space'
-  );
+  return (window as any).API_BASE_URL || 'https://ahmedali021-the-book.hf.space';
 };
 
-// Function to send a chat message to the backend
+// Send chat message to backend
 export const sendChatMessage = async (
-  request: ChatRequest
+  request: ChatRequest,
+  timeout = 10000
 ): Promise<ChatResponse> => {
+  const API_BASE_URL = getApiBaseUrl();
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
   try {
-    const API_BASE_URL = getApiBaseUrl();
     const response = await fetch(`${API_BASE_URL}/chat`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(request),
+      signal: controller.signal,
     });
 
-    if (!response.ok) {
-      const errorData: ChatError = await response.json().catch(() => ({
-        error: `HTTP Error: ${response.status}`,
-        status: 'error',
-        timestamp: new Date().toISOString(),
-      }));
+    clearTimeout(id);
 
-      throw new Error(errorData.error || `HTTP Error: ${response.status}`);
+    // If server returns error, read full text for debugging
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      console.error('Server Response (raw):', text);
+
+      let errorMessage = `HTTP Error: ${response.status}`;
+      try {
+        const errorData: ChatError = JSON.parse(text);
+        errorMessage = errorData.error || errorMessage;
+      } catch {
+        // response is not JSON, keep default message
+      }
+
+      throw new Error(errorMessage);
     }
 
+    // Parse response JSON
     const data: ChatResponse = await response.json();
     return data;
-  } catch (error) {
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      // Network error
-      throw new Error('Connection Failed');
-    }
+
+  } catch (error: any) {
+    clearTimeout(id);
+    if (error.name === 'AbortError') throw new Error('Request timed out');
+    if (error instanceof TypeError) throw new Error('Connection Failed');
     throw error;
   }
 };
