@@ -4,6 +4,7 @@ from models import ChatRequest, ChatResponse
 from services.chat_service import ChatService
 from logging_config import setup_logging
 from metrics import add_metrics_middleware, metrics_endpoint
+from middleware import add_rate_limiting, limiter
 import logging
 
   # Setup logging
@@ -13,6 +14,9 @@ app = FastAPI(title="Agent API Backend", description="The Brain of the textbook 
 
 # Add metrics middleware
 add_metrics_middleware(app)
+
+# Add rate limiting (currently disabled)
+add_rate_limiting(app)
 
   # Configure CORS middleware
 app.add_middleware(
