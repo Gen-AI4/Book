@@ -7,6 +7,5 @@ langchain-text-splitters
 requests
 beautifulsoup4
 openai
-slowapi
 prometheus-client
 pydantic-settings
