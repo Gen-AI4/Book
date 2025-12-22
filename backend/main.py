@@ -1,11 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from models import ChatRequest, ChatResponse 
+from models import ChatRequest, ChatResponse
 from services.chat_service import ChatService
 from logging_config import setup_logging
 from metrics import add_metrics_middleware, metrics_endpoint
 import logging
-
 # Setup logging
 setup_logging()
 
