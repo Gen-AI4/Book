@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Body
 from fastapi.middleware.cors import CORSMiddleware
 from models import ChatRequest, ChatResponse
 from services.chat_service import ChatService
@@ -55,41 +55,42 @@ async def metrics():
     return await metrics_endpoint()
 
 @app.post("/chat",
-          summary="Chat with the Physical AI Teaching Assistant",
-          description="Send a message to the AI assistant and receive a response based on the textbook content.",
-          responses={
-              200: {
-                  "description": "Successful response from the AI assistant",
-                  "content": {
-                      "application/json": {
-                          "example": {
-                              "response": "The textbook explains quantum computing as...",
-                              "context_retrieved": True,
-                              "sources": ["chapter_1.md", "chapter_2.md"],
-                              "timestamp": "2025-12-20T10:00:00Z"
-                          }
-                      }
-                  }
-              }
-          })
+            summary="Chat with the Physical AI Teaching Assistant",
+            description="Send a message to the AI assistant and receive a response based on the textbook content.",
+            responses={
+                200: {
+                    "description": "Successful response from the AI assistant",
+                    "content": {
+                        "application/json": {
+                            "example": {
+                                "response": "The textbook explains quantum computing as...",
+                                "context_retrieved": True,
+                                "sources": ["chapter_1.md", "chapter_2.md"],
+                                "timestamp": "2025-12-20T10:00:00Z"
+                            }
+                        }
+                    }
+                }
+            })
 @limiter.limit("5/minute")  # Limit to 5 requests per minute per IP
-async def chat_endpoint(request: ChatRequest):
-    """
-    Chat endpoint that processes user messages and returns AI-generated responses.
+async def chat_endpoint(request: Request, chat_request: ChatRequest = Body(...)):
+      """
+      Chat endpoint that processes user messages and returns AI-generated responses.
 
-    Args:
-        request (ChatRequest): The chat request containing the message and optional history
+      Args:
+          request: FastAPI Request object (for rate limiting)
+          chat_request: The chat request containing the message and optional history
 
-    Returns:
-        ChatResponse: The AI-generated response with context information
-    """
-    try:
-        # Process the chat request using the chat service
-        response = await chat_service.process_chat_request(request)
-        return response
-    except Exception as e:
-        logging.error(f"Error in chat endpoint: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error occurred")
+      Returns:
+          ChatResponse: The AI-generated response with context information
+      """
+      try:
+          # Process the chat request using the chat service
+          response = await chat_service.process_chat_request(chat_request)
+          return response
+      except Exception as e:
+          logging.error(f"Error in chat endpoint: {str(e)}")
+          raise HTTPException(status_code=500, detail="Internal server error occurred")
 
 if __name__ == "__main__":
     import uvicorn
