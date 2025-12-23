@@ -9,7 +9,7 @@ class Message(BaseModel):
     """
     role: str = Field(..., pattern=r"^(user|assistant|system)$")  # "user", "assistant", or "system"
     content: str = Field(..., min_length=1)
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=datetime.now)
 
 
 class ChatRequest(BaseModel):
@@ -30,4 +30,4 @@ class ChatResponse(BaseModel):
     response: str
     context_retrieved: bool = False
     sources: List[str] = Field(default=[])
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=datetime.now)
