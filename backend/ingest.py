@@ -272,7 +272,7 @@ def save_chunk_to_qdrant(chunk: str, embedding: List[float], metadata: Dict) -> 
         logger.error(f"Error saving chunk to Qdrant: {e}")
         return False
 
-def process_docs_folder(base_url: str = "https://the-book-iota.vercel.app/"):
+def process_docs_folder(base_url: str = "https://the-book-iota.vercel.app"):
     """
     Process all documents from the specified base URL, following the ingestion pipeline.
     Includes checkpointing mechanism for partial failure recovery and progress reporting.
