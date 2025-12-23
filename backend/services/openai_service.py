@@ -23,12 +23,15 @@ class OpenAIService:
             )
             self.model = settings.openrouter_model
             self.is_openrouter = True
+            logger.info("OpenAIService initialized with OpenRouter")
         elif settings.openai_api_key:
             # Use OpenAI
             self.client = OpenAI(api_key=settings.openai_api_key)
             self.model = settings.openai_model
             self.is_openrouter = False
+            logger.info("OpenAIService initialized with OpenAI")
         else:
+            logger.error("No API key available - either OPENAI_API_KEY or OPENROUTER_API_KEY must be set in environment variables")
             raise ValueError("No API key available - either OPENAI_API_KEY or OPENROUTER_API_KEY must be set in environment variables")
 
     def generate_response(self, system_prompt: str, user_message: str, history: List[Dict[str, str]] = None, max_retries: int = 5) -> str:

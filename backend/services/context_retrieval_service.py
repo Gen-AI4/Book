@@ -84,6 +84,12 @@ class ContextRetrievalService:
             )
             query_embedding = response.embeddings[0]
 
+            # Validate embedding dimensions to prevent Qdrant dimension mismatch
+            if len(query_embedding) != 1024:
+                logger.error(f"Unexpected embedding dimension: {len(query_embedding)}, expected 1024. Query: {query[:50]}...")
+                # Return empty results if dimensions don't match
+                return []
+
             # Query Qdrant for similar vectors (newer API)
             search_result = self.qdrant_client.query_points(
                 collection_name=self.collection_name,
