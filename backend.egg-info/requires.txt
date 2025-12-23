@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+cohere
+qdrant-client
+python-dotenv
+langchain-text-splitters
+requests
+beautifulsoup4
+openai
+prometheus-client
+pydantic-settings

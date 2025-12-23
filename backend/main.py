@@ -1,13 +1,23 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from models import ChatRequest, ChatResponse
-from services.chat_service import ChatService
-from logging_config import setup_logging
-from metrics import add_metrics_middleware, metrics_endpoint
-from middleware import add_rate_limiting, limiter
 import logging
+import sys
+import os
 
-  # Setup logging
+# Add the parent directory to the path for proper imports when running directly
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+# Import using absolute paths (with the parent directory added to path)
+from backend.models import ChatRequest, ChatResponse
+from backend.services.chat_service import ChatService
+from backend.logging_config import setup_logging
+from backend.metrics import add_metrics_middleware, metrics_endpoint
+from backend.middleware import add_rate_limiting, limiter
+
+# Setup logging
 setup_logging()
 
 app = FastAPI(title="Agent API Backend", description="The Brain of the textbook with RAG capabilities")
