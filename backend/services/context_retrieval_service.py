@@ -43,14 +43,30 @@ class SimpleCache:
 
 class ContextRetrievalService:
     def __init__(self):
-        # Initialize Qdrant client
+        # Initialize Qdrant client - using the same approach as test_retrieval.py for compatibility
+        import urllib.parse
+
+        # Parse the URL to extract host, port, and protocol for proper initialization
+        parsed_url = urllib.parse.urlparse(settings.qdrant_url)
+
+        # Extract host and port
+        host = parsed_url.hostname
+        port = parsed_url.port if parsed_url.port else (443 if parsed_url.scheme == 'https' else 6333)
+        is_https = parsed_url.scheme == 'https'
+
         if settings.qdrant_api_key:
             self.qdrant_client = QdrantClient(
-                url=settings.qdrant_url,
-                api_key=settings.qdrant_api_key
+                host=host,
+                port=port,
+                api_key=settings.qdrant_api_key,
+                https=is_https
             )
         else:
-            self.qdrant_client = QdrantClient(url=settings.qdrant_url)
+            self.qdrant_client = QdrantClient(
+                host=host,
+                port=port,
+                https=is_https
+            )
 
         # Initialize Cohere client
         self.cohere_client = cohere.Client(settings.cohere_api_key)
@@ -81,24 +97,25 @@ class ContextRetrievalService:
             )
             query_embedding = response.embeddings[0]
 
-            # Search in Qdrant for similar vectors
-            search_result = self.qdrant_client.search(
+            # Query Qdrant for similar vectors (newer API)
+            search_result = self.qdrant_client.query_points(
                 collection_name=self.collection_name,
-                query_vector=query_embedding,
-                limit=top_k * 2  # Get more results to allow for filtering
+                query=query_embedding,
+                limit=top_k * 2,  # Get more results to allow for filtering
+                with_payload=True
             )
 
             # Format the results and apply filtering
             context_items = []
-            for result in search_result:
+            for result in search_result.points:
                 # Apply minimum score filtering
                 if result.score >= min_score:
                     context_items.append({
                         "id": result.id,
-                        "content": result.payload.get("content", ""),
+                        "content": result.payload.get("content", "") if result.payload else "",
                         "score": result.score,
-                        "source": result.payload.get("source", ""),
-                        "metadata": result.payload
+                        "source": result.payload.get("source", "") if result.payload else "",
+                        "metadata": result.payload if result.payload else {}
                     })
 
             # Sort by score in descending order and limit to top_k

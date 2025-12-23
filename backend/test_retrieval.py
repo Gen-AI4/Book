@@ -93,12 +93,13 @@ def retrieve(query: str) -> List[Dict[str, Any]]:
         # Extract the embedding vector
         query_embedding = response.embeddings[0]
 
-        # Search in Qdrant for similar vectors
+        # Query Qdrant for similar vectors (newer API)
         try:
-            search_results = client.search(
+            search_results = client.query_points(
                 collection_name=QDRANT_COLLECTION,
-                query_vector=query_embedding,
-                limit=3  # Implementation directive: show all top 3 results regardless of score
+                query=query_embedding,
+                limit=3,  # Implementation directive: show all top 3 results regardless of score
+                with_payload=True
             )
         except Exception as e:
             print(f"Qdrant connection error: {str(e)}", file=sys.stderr)
@@ -106,12 +107,12 @@ def retrieve(query: str) -> List[Dict[str, Any]]:
 
         # Format results to include distance scores and content
         formatted_results = []
-        for result in search_results:
+        for result in search_results.points:
             formatted_result = {
                 "score": result.score,  # Distance score (lower is more similar)
-                "metadata": result.payload.get("metadata", {}),
-                "page_content": result.payload.get("page_content", ""),
-                "source": result.payload.get("source", "")
+                "metadata": result.payload.get("metadata", {}) if result.payload else {},
+                "page_content": result.payload.get("page_content", "") if result.payload else "",
+                "source": result.payload.get("source", "") if result.payload else ""
             }
             formatted_results.append(formatted_result)
 
