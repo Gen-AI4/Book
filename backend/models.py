@@ -30,4 +30,4 @@ class ChatResponse(BaseModel):
     response: str
     context_retrieved: bool = False
     sources: List[str] = Field(default=[])
-    timestamp: datetime = Field(default_factory=datetime.utcnow())
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
