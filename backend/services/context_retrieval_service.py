@@ -93,7 +93,8 @@ class ContextRetrievalService:
             # Generate embedding for the query using Cohere
             response = self.cohere_client.embed(
                 texts=[query],
-                model="multilingual-22-12"  # Using a good general-purpose embedding model
+                model="embed-english-v3.0",  # Using same model as ingestion to ensure consistent dimensions
+                input_type="search_query"    # Required for v3 models
             )
             query_embedding = response.embeddings[0]
 
