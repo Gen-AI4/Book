@@ -246,7 +246,7 @@ def save_chunk_to_qdrant(chunk: str, embedding: List[float], metadata: Dict) -> 
     try:
         # Upsert the point to Qdrant
         client.upsert(
-            collection_name="physical_ai_textbook",
+            collection_name="textbook_content",
             points=[
                 models.PointStruct(
                     id=point_id,
@@ -356,7 +356,7 @@ def main():
     try:
         # Ensure the collection exists before starting
         from init_db import create_collection_if_not_exists
-        create_collection_if_not_exists("physical_ai_textbook")
+        create_collection_if_not_exists("textbook_content")
 
         # Process the textbook content
         processed, errors = process_docs_folder()
