@@ -43,29 +43,15 @@ class SimpleCache:
 
 class ContextRetrievalService:
     def __init__(self):
-        # Initialize Qdrant client - using the same approach as test_retrieval.py for compatibility
-        import urllib.parse
-
-        # Parse the URL to extract host, port, and protocol for proper initialization
-        parsed_url = urllib.parse.urlparse(settings.qdrant_url)
-
-        # Extract host and port
-        host = parsed_url.hostname
-        port = parsed_url.port if parsed_url.port else (443 if parsed_url.scheme == 'https' else 6333)
-        is_https = parsed_url.scheme == 'https'
-
+        # Initialize Qdrant client - using the same approach as init_db.py for consistency
         if settings.qdrant_api_key:
             self.qdrant_client = QdrantClient(
-                host=host,
-                port=port,
+                url=settings.qdrant_url,
                 api_key=settings.qdrant_api_key,
-                https=is_https
             )
         else:
             self.qdrant_client = QdrantClient(
-                host=host,
-                port=port,
-                https=is_https
+                url=settings.qdrant_url,
             )
 
         # Initialize Cohere client

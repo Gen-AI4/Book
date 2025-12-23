@@ -54,8 +54,14 @@ class ChatService:
                     history=history
                 )
             except Exception as openai_error:
+                error_msg = str(openai_error)
                 logger.exception(f"OpenAI API call failed: {str(openai_error)}")
-                response_text = "I'm sorry, but I'm currently unable to process your request. Please try again later."
+
+                # Check if it's a quota/429 error and provide more specific message
+                if "429" in error_msg or "quota" in error_msg.lower() or "rate limit" in error_msg.lower():
+                    response_text = "I'm sorry, but I've reached my API usage limits. Please try again later or check back soon."
+                else:
+                    response_text = "I'm sorry, but I'm currently unable to process your request. Please try again later."
 
             # Determine if context was retrieved
             context_retrieved = len(context_items) > 0 and bool(context_block)
@@ -112,8 +118,14 @@ class ChatService:
                 ):
                     yield chunk
             except Exception as openai_error:
+                error_msg = str(openai_error)
                 logger.exception(f"OpenAI streaming API call failed: {str(openai_error)}")
-                yield "I'm sorry, but I'm currently unable to process your request in streaming mode."
+
+                # Check if it's a quota/429 error and provide more specific message
+                if "429" in error_msg or "quota" in error_msg.lower() or "rate limit" in error_msg.lower():
+                    yield "I'm sorry, but I've reached my API usage limits. Please try again later or check back soon."
+                else:
+                    yield "I'm sorry, but I'm currently unable to process your request in streaming mode."
 
         except HTTPException:
             raise
