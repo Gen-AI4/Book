@@ -24,7 +24,7 @@ def test_config():
         print(f"  - Qdrant: {settings.qdrant_url[:30]}...")
         print(f"  - Cohere: {'Available' if settings.cohere_api_key else 'Missing'}")
         print(f"  - OpenRouter: {'Available' if settings.openrouter_api_key else 'Missing'}")
-        print(f"  - Model: {settings.openrouter_model if settings.openrouter_api_key else settings.openai_model}")
+        print(f"  - Model: {settings.openrouter_model}")
         return True
     except Exception as e:
         print(f"[ERROR] Configuration test failed: {e}")
@@ -124,7 +124,7 @@ def main():
         print("\n[SUCCESS] All fixes have been successfully implemented!")
         print("\nSummary of fixes applied:")
         print("  1. Fixed Qdrant client initialization in context retrieval service")
-        print("  2. Updated OpenAI service to support OpenRouter API")
+        print("  2. Updated OpenAI service to use OpenRouter API only")
         print("  3. Improved error handling for API quota issues")
         print("  4. Enhanced configuration to support OpenRouter")
         print("  5. Verified all embeddings use correct 1024 dimensions")

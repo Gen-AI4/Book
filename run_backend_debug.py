@@ -16,7 +16,7 @@ try:
 
     print("Importing config first...")
     from config import settings
-    print(f"Settings loaded: OpenAI model = {settings.openai_model}")
+    print(f"Settings loaded: OpenRouter model = {settings.openrouter_model}")
 
     print("Importing main app...")
     from main import app

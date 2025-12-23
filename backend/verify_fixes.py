@@ -10,9 +10,9 @@ from backend.services.openai_service import OpenAIService
 from backend.services.context_retrieval_service import ContextRetrievalService
 from backend.config import settings
 
-def verify_openai_fix():
-    """Verify OpenAI API authentication fix"""
-    print("Verifying OpenAI API authentication fix...")
+def verify_openrouter_fix():
+    """Verify OpenRouter API authentication fix"""
+    print("Verifying OpenRouter API authentication fix...")
     try:
         service = OpenAIService()
         print(f"SUCCESS: OpenAIService initialized")
@@ -39,7 +39,6 @@ def verify_config():
     """Verify configuration settings"""
     print("\nVerifying configuration...")
     print(f"OpenRouter API key available: {bool(settings.openrouter_api_key)}")
-    print(f"OpenAI API key available: {bool(settings.openai_api_key)}")
     print(f"Cohere API key available: {bool(settings.cohere_api_key)}")
     print(f"Qdrant URL: {settings.qdrant_url}")
     print(f"Qdrant collection: {settings.qdrant_collection_name}")
@@ -50,14 +49,14 @@ if __name__ == "__main__":
     print("=" * 50)
 
     config_ok = verify_config()
-    openai_ok = verify_openai_fix()
+    openrouter_ok = verify_openrouter_fix()
     context_ok = verify_context_service()
 
     print("=" * 50)
     print("Verification Summary:")
     print(f"Configuration: {'PASS' if config_ok else 'FAIL'}")
-    print(f"OpenAI Service: {'PASS' if openai_ok else 'FAIL'}")
+    print(f"OpenRouter Service: {'PASS' if openrouter_ok else 'FAIL'}")
     print(f"Context Service: {'PASS' if context_ok else 'FAIL'}")
 
-    all_pass = config_ok and openai_ok and context_ok
+    all_pass = config_ok and openrouter_ok and context_ok
     print(f"Overall: {'ALL FIXES VERIFIED' if all_pass else 'SOME ISSUES REMAIN'}")

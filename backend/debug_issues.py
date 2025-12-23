@@ -41,9 +41,9 @@ def debug_cohere_embeddings():
         traceback.print_exc()
         return False
 
-def debug_openai_service():
-    """Debug the OpenAI service configuration"""
-    print("\nDebugging OpenAI service...")
+def debug_openrouter_service():
+    """Debug the OpenRouter service configuration"""
+    print("\nDebugging OpenRouter service...")
     try:
         service = OpenAIService()
 
@@ -53,7 +53,7 @@ def debug_openai_service():
         if service.is_openrouter:
             print("✅ OpenAIService is configured to use OpenRouter")
         else:
-            print("⚠️ OpenAIService is configured to use OpenAI")
+            print("❌ OpenAIService is not configured to use OpenRouter")
 
         # Check the client configuration
         print(f"Client base URL: {getattr(service.client, '_base_url', 'Not available')}")
@@ -61,7 +61,7 @@ def debug_openai_service():
         return True
 
     except Exception as e:
-        print(f"❌ Error in OpenAI service: {e}")
+        print(f"❌ Error in OpenRouter service: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -69,19 +69,14 @@ def debug_openai_service():
 def debug_config():
     """Debug the configuration"""
     print("\nDebugging configuration...")
-    print(f"OpenAI API Key available: {bool(settings.openai_api_key)}")
     print(f"OpenRouter API Key available: {bool(settings.openrouter_api_key)}")
-    print(f"OpenAI Model: {settings.openai_model}")
     print(f"OpenRouter Model: {settings.openrouter_model}")
 
     if settings.openrouter_api_key:
         print("✅ OpenRouter API key is available")
         return True
-    elif settings.openai_api_key:
-        print("⚠️ Only OpenAI API key is available")
-        return True
     else:
-        print("❌ No API keys available")
+        print("❌ No OpenRouter API key available")
         return False
 
 def main():
@@ -90,13 +85,13 @@ def main():
 
     config_ok = debug_config()
     cohere_ok = debug_cohere_embeddings()
-    openai_ok = debug_openai_service()
+    openrouter_ok = debug_openrouter_service()
 
     print("=" * 50)
     print("Debug Summary:")
     print(f"Configuration: {'✅ OK' if config_ok else '❌ ERROR'}")
     print(f"Cohere Embeddings: {'✅ OK' if cohere_ok else '❌ ERROR'}")
-    print(f"OpenAI Service: {'✅ OK' if openai_ok else '❌ ERROR'}")
+    print(f"OpenRouter Service: {'✅ OK' if openrouter_ok else '❌ ERROR'}")
 
     if not cohere_ok:
         print("\n🔍 The main issue appears to be with Cohere embeddings generating 768 dimensions instead of 1024!")
@@ -105,7 +100,7 @@ def main():
         print("2. There's a different embedding service being used")
         print("3. The collection was created with wrong dimensions")
 
-    return config_ok and cohere_ok and openai_ok
+    return config_ok and cohere_ok and openrouter_ok
 
 if __name__ == "__main__":
     main()

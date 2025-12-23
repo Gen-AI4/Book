@@ -14,29 +14,22 @@ logger = logging.getLogger(__name__)
 
 class OpenAIService:
     def __init__(self):
-        # Determine which API to use based on available keys
-        if settings.openrouter_api_key:
-            # Use OpenRouter
-            self.client = OpenAI(
-                base_url="https://openrouter.ai/api/v1",
-                api_key=settings.openrouter_api_key,
-            )
-            self.model = settings.openrouter_model
-            self.is_openrouter = True
-            logger.info("OpenAIService initialized with OpenRouter")
-        elif settings.openai_api_key:
-            # Use OpenAI
-            self.client = OpenAI(api_key=settings.openai_api_key)
-            self.model = settings.openai_model
-            self.is_openrouter = False
-            logger.info("OpenAIService initialized with OpenAI")
-        else:
-            logger.error("No API key available - either OPENAI_API_KEY or OPENROUTER_API_KEY must be set in environment variables")
-            raise ValueError("No API key available - either OPENAI_API_KEY or OPENROUTER_API_KEY must be set in environment variables")
+        # Use OpenRouter only
+        if not settings.openrouter_api_key:
+            logger.error("No OpenRouter API key available - OPENROUTER_API_KEY must be set in environment variables")
+            raise ValueError("No OpenRouter API key available - OPENROUTER_API_KEY must be set in environment variables")
+
+        self.client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=settings.openrouter_api_key,
+        )
+        self.model = settings.openrouter_model
+        self.is_openrouter = True
+        logger.info("OpenAIService initialized with OpenRouter")
 
     def generate_response(self, system_prompt: str, user_message: str, history: List[Dict[str, str]] = None, max_retries: int = 5) -> str:
         """
-        Generate a response using OpenAI or OpenRouter API with the provided context
+        Generate a response using OpenRouter API with the provided context
         """
         for attempt in range(max_retries):
             try:
@@ -65,7 +58,7 @@ class OpenAIService:
                 return response.choices[0].message.content
             except Exception as e:
                 error_msg = str(e)
-                logger.error(f"Error calling {'OpenRouter' if self.is_openrouter else 'OpenAI'} API (attempt {attempt + 1}): {error_msg}")
+                logger.error(f"Error calling OpenRouter API (attempt {attempt + 1}): {error_msg}")
 
                 # Check if it's a quota/429 error and apply longer backoff
                 if "429" in error_msg or "quota" in error_msg.lower() or "rate limit" in error_msg.lower():
@@ -91,7 +84,7 @@ class OpenAIService:
     async def generate_streaming_response(self, system_prompt: str, user_message: str,
                                          history: List[Dict[str, str]] = None, max_retries: int = 5) -> AsyncGenerator[str, None]:
         """
-        Generate a streaming response using OpenAI or OpenRouter API
+        Generate a streaming response using OpenRouter API
         """
         for attempt in range(max_retries):
             try:
@@ -125,7 +118,7 @@ class OpenAIService:
                 return  # Success, exit the retry loop
             except Exception as e:
                 error_msg = str(e)
-                logger.error(f"Error calling {'OpenRouter' if self.is_openrouter else 'OpenAI'} API for streaming (attempt {attempt + 1}): {error_msg}")
+                logger.error(f"Error calling OpenRouter API for streaming (attempt {attempt + 1}): {error_msg}")
 
                 # Check if it's a quota/429 error and apply longer backoff
                 if "429" in error_msg or "quota" in error_msg.lower() or "rate limit" in error_msg.lower():

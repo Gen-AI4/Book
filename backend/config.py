@@ -14,12 +14,8 @@ class Settings(Settings):
     qdrant_api_key: Optional[str] = Field(default=None, alias="QDRANT_API_KEY")
     qdrant_collection_name: str = Field(default="textbook_content", alias="QDRANT_COLLECTION_NAME")
 
-    # OpenAI settings
-    openai_api_key: Optional[str] = Field(default=None, alias="OPENAI_API_KEY")
-    openai_model: str = Field(default="gpt-3.5-turbo", alias="OPENAI_MODEL")  # Default model, can be gpt-4o as well
-
-    # OpenRouter settings (fallback for when OpenAI key is not available)
-    openrouter_api_key: Optional[str] = Field(default=None, alias="OPENROUTER_API_KEY")
+    # OpenRouter settings
+    openrouter_api_key: str = Field(alias="OPENROUTER_API_KEY")
     openrouter_model: str = Field(default="openai/gpt-oss-20b:free", alias="OPENROUTER_MODEL")  # Free model from your example
 
     # Cohere settings

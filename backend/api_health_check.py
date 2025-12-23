@@ -55,52 +55,62 @@ def test_qdrant_connection():
         print(f"[ERROR] Qdrant connection failed: {e}")
         return False
 
-def test_openai_connection():
-    """Test OpenAI API connection with minimal request"""
+def test_openrouter_connection():
+    """Test OpenRouter API connection with minimal request"""
     try:
-        import openai
-        openai.api_key = settings.openai_api_key
+        from openai import OpenAI
+
+        # Initialize OpenAI client with OpenRouter base URL
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=settings.openrouter_api_key,
+        )
 
         # Make a minimal test request
-        response = openai.chat.completions.create(
-            model=settings.openai_model,
+        response = client.chat.completions.create(
+            model=settings.openrouter_model,
             messages=[{"role": "user", "content": "test"}],
             max_tokens=5,
             temperature=0
         )
 
-        print("[OK] OpenAI API connection successful")
+        print("[OK] OpenRouter API connection successful")
         return True
     except Exception as e:
         error_msg = str(e)
         if "429" in error_msg or "quota" in error_msg.lower() or "rate limit" in error_msg.lower():
-            print(f"[WARN] OpenAI API connection failed due to rate limit or quota: {error_msg}")
+            print(f"[WARN] OpenRouter API connection failed due to rate limit or quota: {error_msg}")
         else:
-            print(f"[ERROR] OpenAI API connection failed: {error_msg}")
+            print(f"[ERROR] OpenRouter API connection failed: {error_msg}")
         return False
 
-async def test_openai_connection_async():
-    """Async version to test OpenAI API"""
+async def test_openrouter_connection_async():
+    """Async version to test OpenRouter API"""
     try:
-        import openai
-        openai.api_key = settings.openai_api_key
+        from openai import OpenAI
+
+        # Initialize OpenAI client with OpenRouter base URL
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=settings.openrouter_api_key,
+        )
 
         # Make a minimal test request
-        response = await openai.chat.completions.create(
-            model=settings.openai_model,
+        response = client.chat.completions.create(
+            model=settings.openrouter_model,
             messages=[{"role": "user", "content": "test"}],
             max_tokens=5,
             temperature=0
         )
 
-        print("[OK] OpenAI API async connection successful")
+        print("[OK] OpenRouter API async connection successful")
         return True
     except Exception as e:
         error_msg = str(e)
         if "429" in error_msg or "quota" in error_msg.lower() or "rate limit" in error_msg.lower():
-            print(f"[WARN] OpenAI API async connection failed due to rate limit or quota: {error_msg}")
+            print(f"[WARN] OpenRouter API async connection failed due to rate limit or quota: {error_msg}")
         else:
-            print(f"[ERROR] OpenAI API async connection failed: {error_msg}")
+            print(f"[ERROR] OpenRouter API async connection failed: {error_msg}")
         return False
 
 def main():
@@ -113,24 +123,24 @@ def main():
     # Test Qdrant
     qdrant_ok = test_qdrant_connection()
 
-    # Test OpenAI
-    openai_ok = test_openai_connection()
+    # Test OpenRouter
+    openrouter_ok = test_openrouter_connection()
 
-    # Async OpenAI test
+    # Async OpenRouter test
     try:
-        openai_async_ok = asyncio.run(test_openai_connection_async())
+        openrouter_async_ok = asyncio.run(test_openrouter_connection_async())
     except Exception as e:
-        print(f"✗ OpenAI async test failed: {e}")
-        openai_async_ok = False
+        print(f"✗ OpenRouter async test failed: {e}")
+        openrouter_async_ok = False
 
     print("=" * 40)
     print("Summary:")
     print(f"Cohere: {'[OK]' if cohere_ok else '[ERROR]'}")
     print(f"Qdrant:  {'[OK]' if qdrant_ok else '[ERROR]'}")
-    print(f"OpenAI:  {'[OK]' if openai_ok else '[ERROR]'}")
-    print(f"OpenAI Async:  {'[OK]' if openai_async_ok else '[ERROR]'}")
+    print(f"OpenRouter:  {'[OK]' if openrouter_ok else '[ERROR]'}")
+    print(f"OpenRouter Async:  {'[OK]' if openrouter_async_ok else '[ERROR]'}")
 
-    all_ok = cohere_ok and qdrant_ok and (openai_ok or openai_async_ok)
+    all_ok = cohere_ok and qdrant_ok and (openrouter_ok or openrouter_async_ok)
     print(f"Overall: {'[OK] All services connected' if all_ok else '[ERROR] Some services failed'}")
 
     return all_ok
