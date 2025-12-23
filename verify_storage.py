@@ -26,7 +26,7 @@ def verify_qdrant_storage():
     )
 
     # Get collection info
-    collection_name = "physical_ai_textbook"
+    collection_name = os.getenv("QDRANT_COLLECTION_NAME", "textbook_content")
     try:
         collection_info = client.get_collection(collection_name)
         print(f"Collection '{collection_name}' exists")

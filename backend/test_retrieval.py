@@ -45,7 +45,7 @@ co = cohere.Client(api_key=COHERE_API_KEY)
 # Initialize Qdrant client
 QDRANT_HOST = os.getenv("QDRANT_HOST")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
-QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "text_chunks")
+QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION_NAME", "textbook_content")
 
 if not QDRANT_HOST:
     raise ValueError("QDRANT_HOST environment variable is required")
@@ -53,10 +53,8 @@ if not QDRANT_API_KEY:
     raise ValueError("QDRANT_API_KEY environment variable is required")
 
 client = QdrantClient(
-    url="https://16b332a7-4011-462d-a698-10f2e3df8e6e.europe-west3-0.gcp.cloud.qdrant.io:6333",
-    api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.WDsCBIfwgPQSnM55VTDs1T8f_GihKGacXZ_mBxgSUP4",
-    port=6333,
-    https=True
+    url=QDRANT_HOST,
+    api_key=QDRANT_API_KEY,
 )
 
 

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-def create_collection_if_not_exists(collection_name: str = "physical_ai_textbook"):
+def create_collection_if_not_exists(collection_name: str = "textbook_content"):
     """
     Creates a Qdrant collection if it doesn't exist, with the correct vector configuration
     for Cohere embeddings (1024 dimensions, Cosine distance).

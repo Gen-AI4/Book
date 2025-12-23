@@ -14,7 +14,7 @@ class OpenAIService:
         openai.api_key = settings.openai_api_key
         self.model = settings.openai_model
 
-    def generate_response(self, system_prompt: str, user_message: str, history: List[Dict[str, str]] = None, max_retries: int = 3) -> str:
+    def generate_response(self, system_prompt: str, user_message: str, history: List[Dict[str, str]] = None, max_retries: int = 5) -> str:
         """
         Generate a response using OpenAI API with the provided context
         """
@@ -44,16 +44,25 @@ class OpenAIService:
 
                 return response.choices[0].message.content
             except Exception as e:
-                logger.error(f"Error calling OpenAI API (attempt {attempt + 1}): {str(e)}")
-                if attempt == max_retries - 1:  # Last attempt
+                error_msg = str(e)
+                logger.error(f"Error calling OpenAI API (attempt {attempt + 1}): {error_msg}")
+
+                # Check if it's a quota/429 error and apply longer backoff
+                if "429" in error_msg or "quota" in error_msg.lower() or "rate limit" in error_msg.lower():
+                    # For quota/429 errors, use longer exponential backoff
+                    wait_time = min(60, (2 ** attempt) * 10)  # Max 60 seconds
+                    logger.warning(f"Rate limit or quota error, waiting {wait_time} seconds before retry...")
+                    time.sleep(wait_time)
+                elif attempt == max_retries - 1:  # Last attempt
                     raise
-                # Wait before retrying (exponential backoff)
-                time.sleep(2 ** attempt)
+                else:
+                    # For other errors, use standard backoff
+                    time.sleep(2 ** attempt)
 
         raise Exception(f"Failed to generate response after {max_retries} attempts")
 
     async def generate_streaming_response(self, system_prompt: str, user_message: str,
-                                         history: List[Dict[str, str]] = None, max_retries: int = 3) -> AsyncGenerator[str, None]:
+                                         history: List[Dict[str, str]] = None, max_retries: int = 5) -> AsyncGenerator[str, None]:
         """
         Generate a streaming response using OpenAI API
         """
@@ -88,10 +97,19 @@ class OpenAIService:
                         yield chunk.choices[0].delta.content
                 return  # Success, exit the retry loop
             except Exception as e:
-                logger.error(f"Error calling OpenAI API for streaming (attempt {attempt + 1}): {str(e)}")
-                if attempt == max_retries - 1:  # Last attempt
+                error_msg = str(e)
+                logger.error(f"Error calling OpenAI API for streaming (attempt {attempt + 1}): {error_msg}")
+
+                # Check if it's a quota/429 error and apply longer backoff
+                if "429" in error_msg or "quota" in error_msg.lower() or "rate limit" in error_msg.lower():
+                    # For quota/429 errors, use longer exponential backoff
+                    wait_time = min(60, (2 ** attempt) * 10)  # Max 60 seconds
+                    logger.warning(f"Rate limit or quota error, waiting {wait_time} seconds before retry...")
+                    await asyncio.sleep(wait_time)
+                elif attempt == max_retries - 1:  # Last attempt
                     raise
-                # Wait before retrying (exponential backoff)
-                await asyncio.sleep(2 ** attempt)
+                else:
+                    # For other errors, use standard backoff
+                    await asyncio.sleep(2 ** attempt)
 
         raise Exception(f"Failed to generate streaming response after {max_retries} attempts")

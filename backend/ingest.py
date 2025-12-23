@@ -226,9 +226,16 @@ def save_chunk_to_qdrant(chunk: str, embedding: List[float], metadata: Dict) -> 
     if not qdrant_host or not qdrant_api_key:
         raise ValueError("QDRANT_HOST and QDRANT_API_KEY must be set in environment variables")
 
+    # Initialize Qdrant client using environment variables
+    qdrant_host = os.getenv("QDRANT_HOST")
+    qdrant_api_key = os.getenv("QDRANT_API_KEY")
+
+    if not qdrant_host or not qdrant_api_key:
+        raise ValueError("QDRANT_HOST and QDRANT_API_KEY must be set in environment variables")
+
     client = QdrantClient(
-        url="https://16b332a7-4011-462d-a698-10f2e3df8e6e.europe-west3-0.gcp.cloud.qdrant.io:6333",
-        api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.WDsCBIfwgPQSnM55VTDs1T8f_GihKGacXZ_mBxgSUP4",
+        url=qdrant_host,
+        api_key=qdrant_api_key,
     )
 
     # Generate deterministic UUID based on content hash
@@ -244,9 +251,12 @@ def save_chunk_to_qdrant(chunk: str, embedding: List[float], metadata: Dict) -> 
     }
 
     try:
+        # Get collection name from environment variable, fallback to default
+        collection_name = os.getenv("QDRANT_COLLECTION_NAME", "textbook_content")
+
         # Upsert the point to Qdrant
         client.upsert(
-            collection_name="textbook_content",
+            collection_name=collection_name,
             points=[
                 models.PointStruct(
                     id=point_id,
