@@ -1,6 +1,7 @@
 from typing import List, Dict, Any, AsyncGenerator
 from fastapi import HTTPException
 import logging
+from datetime import datetime
 
 from backend.models import ChatRequest, ChatResponse
 from backend.services.context_retrieval_service import ContextRetrievalService
@@ -70,7 +71,8 @@ class ChatService:
             return ChatResponse(
                 response=response_text,
                 context_retrieved=context_retrieved,
-                sources=sources
+                sources=sources,
+                timestamp=datetime.now()
             )
 
         except HTTPException:
