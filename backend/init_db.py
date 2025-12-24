@@ -23,7 +23,7 @@ def create_collection_if_not_exists(collection_name: str = "textbook_content"):
         api_key=qdrant_api_key,
     )
 
-    # Check if collection exists
+    # Check if collection exists and has correct configuration
     try:
         collections = client.get_collections()
         collection_names = [collection.name for collection in collections.collections]
@@ -41,7 +41,25 @@ def create_collection_if_not_exists(collection_name: str = "textbook_content"):
             )
             print(f"Collection '{collection_name}' created successfully!")
         else:
-            print(f"Collection '{collection_name}' already exists.")
+            # Check if existing collection has correct vector size
+            collection_info = client.get_collection(collection_name)
+            current_size = collection_info.config.params.vectors.size
+            if current_size != 1024:
+                print(f"Collection '{collection_name}' has wrong vector size ({current_size}), recreating with 1024...")
+
+                # Delete and recreate the collection with correct dimensions
+                client.delete_collection(collection_name)
+
+                client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config=models.VectorParams(
+                        size=1024,  # Cohere embed-english-v3.0 produces 1024-dimensional vectors
+                        distance=models.Distance.COSINE
+                    )
+                )
+                print(f"Collection '{collection_name}' recreated with correct vector size!")
+            else:
+                print(f"Collection '{collection_name}' already exists with correct configuration (1024 dimensions).")
 
     except Exception as e:
         print(f"Error creating or checking collection: {e}")
