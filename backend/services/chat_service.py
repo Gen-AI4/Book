@@ -68,6 +68,18 @@ class ChatService:
             context_retrieved = len(context_items) > 0 and bool(context_block)
             sources = [item.get("source", "") for item in context_items if item.get("source")]
 
+            # If no context was retrieved, ensure the response is restricted to textbook content
+            if not context_retrieved:
+                # Replace general knowledge responses with a proper restriction message
+                if ("i don't know" not in response_text.lower() and
+                    "i do not know" not in response_text.lower() and
+                    "i cannot answer" not in response_text.lower() and
+                    "i can only answer" not in response_text.lower() and
+                    "i can only help" not in response_text.lower() and
+                    "outside the scope" not in response_text.lower()):
+                    # This appears to be a general knowledge response, replace with restriction message
+                    response_text = "I'm a Physics AI Teaching Assistant. I can only answer questions related to the textbook content. I cannot answer general knowledge questions that are outside the scope of the provided physics materials."
+
             return ChatResponse(
                 response=response_text,
                 context_retrieved=context_retrieved,
@@ -111,8 +123,13 @@ class ChatService:
 
             history = getattr(request, "history", []) or []
 
+            # Determine if context was retrieved
+            context_retrieved = len(context_items) > 0 and bool(context_block)
+
             # Generate streaming response
             try:
+                # If context was not retrieved, we can't do streaming restriction effectively
+                # So we'll rely on the system prompt to guide the response
                 async for chunk in self.openai_service.generate_streaming_response(
                     system_prompt=system_prompt,
                     user_message=request.message,
