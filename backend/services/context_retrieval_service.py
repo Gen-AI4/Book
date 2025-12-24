@@ -77,11 +77,11 @@ class ContextRetrievalService:
 
         try:
             # Generate embedding for the query using Cohere
-            # Use search_document input_type to match the ingestion process (produces 1024-dim embeddings)
+            # Use search_query input_type for queries (as per Cohere best practices)
             response = self.cohere_client.embed(
                 texts=[query],
                 model="embed-english-v3.0",  # Using same model as ingestion to ensure consistent dimensions
-                input_type="search_document"  # Match the input_type used during ingestion
+                input_type="search_query"  # Use search_query for queries as per Cohere best practices
             )
             query_embedding = response.embeddings[0]
 
