@@ -3,13 +3,18 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 
+def get_current_datetime():
+    """Helper function to get current datetime to avoid import conflicts."""
+    return datetime.now()
+
+
 class Message(BaseModel):
     """
     Represents a single message in a conversation
     """
     role: str = Field(..., pattern=r"^(user|assistant|system)$")  # "user", "assistant", or "system"
     content: str = Field(..., min_length=1)
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory=get_current_datetime)
 
 
 class ChatRequest(BaseModel):
@@ -30,4 +35,4 @@ class ChatResponse(BaseModel):
     response: str
     context_retrieved: bool = False
     sources: List[str] = Field(default=[])
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory=get_current_datetime)
