@@ -106,11 +106,11 @@ class ContextRetrievalService:
                 if result.score >= min_score:
                     context_items.append({
                         "id": result.id,
-                        "content": result.payload.get("content", "") if result.payload else "",
+                        "content": result.payload.get("page_content", "") if result.payload else "", # <--- Key is                      'page_content'
                         "score": result.score,
-                        "source": result.payload.get("source", "") if result.payload else "",
+                        "source": result.payload.get("source_url", "") if result.payload else "",    # <--- Key is                      'source_url'
                         "metadata": result.payload if result.payload else {}
-                    })
+                        })
 
             # Sort by score in descending order and limit to top_k
             context_items.sort(key=lambda x: x["score"], reverse=True)
