@@ -43,7 +43,7 @@ class SimpleCache:
 
 class ContextRetrievalService:
     def __init__(self):
-        # Initialize Qdrant client - using the same approach as init_db.py for consistency
+        # Initialize Qdrant client
         if settings.qdrant_api_key:
             self.qdrant_client = QdrantClient(
                 url=settings.qdrant_url,
@@ -60,7 +60,7 @@ class ContextRetrievalService:
         self.collection_name = settings.qdrant_collection_name
 
         # Initialize cache
-        self.cache = SimpleCache(ttl_seconds=300)  # 5 minute TTL
+        self.cache = SimpleCache(ttl_seconds=300)
 
     def retrieve_context(self, query: str, top_k: int = 5, min_score: float = 0.3) -> List[Dict[str, Any]]:
         """
@@ -77,42 +77,41 @@ class ContextRetrievalService:
 
         try:
             # Generate embedding for the query using Cohere
-            # Use search_query input_type for queries (as per Cohere best practices)
+            # CRITICAL FIX 1: MUST specify model="embed-english-v3.0" to get 1024 dimensions
             response = self.cohere_client.embed(
                 texts=[query],
-                model="embed-english-v3.0",  # Using same model as ingestion to ensure consistent dimensions
-                input_type="search_query"  # Use search_query for queries as per Cohere best practices
+                model="embed-english-v3.0", 
+                input_type="search_query"
             )
             query_embedding = response.embeddings[0]
 
-            # Validate embedding dimensions to prevent Qdrant dimension mismatch
+            # Validate embedding dimensions
             if len(query_embedding) != 1024:
-                logger.error(f"Unexpected embedding dimension: {len(query_embedding)}, expected 1024. Query: {query[:50]}...")
-                # Return empty results if dimensions don't match
+                logger.error(f"Unexpected embedding dimension: {len(query_embedding)}, expected 1024.")
                 return []
 
-            # Query Qdrant for similar vectors (newer API)
+            # Query Qdrant
             search_result = self.qdrant_client.query_points(
                 collection_name=self.collection_name,
                 query=query_embedding,
-                limit=top_k * 2,  # Get more results to allow for filtering
+                limit=top_k * 2,
                 with_payload=True
             )
 
-            # Format the results and apply filtering
+            # Format the results
             context_items = []
             for result in search_result.points:
-                # Apply minimum score filtering
                 if result.score >= min_score:
                     context_items.append({
                         "id": result.id,
-                        "content": result.payload.get("page_content", "") if result.payload else "", # <--- Key is                      'page_content'
+                        # CRITICAL FIX 2: Using 'page_content' and 'source_url' to match your database
+                        "content": result.payload.get("page_content", "") if result.payload else "",
                         "score": result.score,
-                        "source": result.payload.get("source_url", "") if result.payload else "",    # <--- Key is                      'source_url'
+                        "source": result.payload.get("source_url", "") if result.payload else "",
                         "metadata": result.payload if result.payload else {}
-                        })
+                    })
 
-            # Sort by score in descending order and limit to top_k
+            # Sort and limit
             context_items.sort(key=lambda x: x["score"], reverse=True)
             result = context_items[:top_k]
 
@@ -125,10 +124,6 @@ class ContextRetrievalService:
             return []
 
     def construct_context_block(self, context_items: List[Dict[str, Any]]) -> str:
-        """
-        Construct a context block by concatenating retrieved chunks
-        Format: Context:\n---\n{chunk1}\n---\n{chunk2}...
-        """
         if not context_items:
             return ""
 
