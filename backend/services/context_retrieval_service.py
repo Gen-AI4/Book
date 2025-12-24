@@ -90,7 +90,7 @@ class ContextRetrievalService:
                 logger.error(f"Unexpected embedding dimension: {len(query_embedding)}, expected 1024.")
                 return []
 
-            # Query Qdrant
+            # Query Qdrant - using query_points method with correct parameters for newer API
             search_result = self.qdrant_client.query_points(
                 collection_name=self.collection_name,
                 query=query_embedding,
