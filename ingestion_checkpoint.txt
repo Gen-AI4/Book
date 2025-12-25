@@ -1,2 +1,0 @@
-https://the-book-iota.vercel.app/
-https://the-book-iota.vercel.app/docs/intro/foundations

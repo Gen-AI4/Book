@@ -21,6 +21,8 @@ class Settings(Settings):
     # Cohere settings
     cohere_api_key: str = Field(alias="COHERE_API_KEY")
 
+    base_url: Optional[str] = Field(default=None, alias="BASE_URL")
+
     class Config:
         env_file = ".env"
         env_prefix = ""
