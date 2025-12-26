@@ -23,7 +23,8 @@ class ChatService:
         self.context_service = ContextRetrievalService()
         self.openai_service = OpenAIService()
 
-    def generate_response(self, message: str, chat_history: List[Dict[str, str]] = None) -> str:
+    # RENAMED FUNCTION FROM generate_response TO process_chat_request
+    def process_chat_request(self, message: str, chat_history: List[Dict[str, str]] = None) -> str:
         """
         Generate a response using RAG (Retrieval Augmented Generation)
         """
