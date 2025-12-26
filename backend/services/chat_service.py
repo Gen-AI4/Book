@@ -22,10 +22,10 @@ class ChatService:
         self.context_service = ContextRetrievalService()
         self.openai_service = OpenAIService()
 
-    # CRITICAL FIX: 'async' keyword allows app.py to 'await' this function
+    # CRITICAL FIX: The 'async' keyword below fixes the "str object can't be awaited" error
     async def process_chat_request(self, message: Any, chat_history: List[Dict[str, str]] = None) -> str:
         try:
-            # 1. SAFETY: Convert input to string (Fixes "Invalid Type" errors)
+            # 1. SAFETY: Handle Object/Dict input to prevent validation errors
             query_text = ""
             if isinstance(message, str):
                 query_text = message
@@ -36,16 +36,18 @@ class ChatService:
 
             logger.info(f"Processing query: {query_text}")
 
-            # 2. Retrieve relevant context
+            # 2. Retrieve Context
             context_results = self.context_service.retrieve_context(query_text)
             context_block = self.context_service.construct_context_block(context_results)
 
-            # 3. Prepare messages
+            # 3. Build Messages
             messages = [{"role": "system", "content": SYSTEM_PROMPT}]
             
-            # Add chat history
+            # Add History
             if chat_history:
-                messages.extend(chat_history[-4:])
+                # Ensure history is a clean list of dicts
+                clean_history = [msg for msg in chat_history if isinstance(msg, dict)]
+                messages.extend(clean_history[-4:])
 
             # 4. Add User Query + Context
             user_content = f"""
@@ -56,11 +58,11 @@ class ChatService:
             """
             messages.append({"role": "user", "content": user_content})
 
-            # 5. Get Response (Calls the function we defined in Step 1)
+            # 5. Get Response
             response = self.openai_service.get_chat_completion(messages)
             
             return response
 
         except Exception as e:
-            logger.error(f"Error processing chat request: {str(e)}")
-            return "I apologize, but I encountered an internal error. Please check the server logs."
+            logger.error(f"CRITICAL ERROR in process_chat_request: {str(e)}")
+            return "I apologize, but I encountered an internal error. Please check the logs."

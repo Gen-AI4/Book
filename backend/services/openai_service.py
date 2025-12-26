@@ -8,11 +8,12 @@ logger = logging.getLogger(__name__)
 
 class OpenAIService:
     def __init__(self):
-        # Check for API Key
+        # Validate API Key
         if not settings.openrouter_api_key:
             logger.error("No OpenRouter API key available")
             raise ValueError("OPENROUTER_API_KEY must be set in environment variables")
 
+        # Initialize Client
         self.client = OpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=settings.openrouter_api_key,
@@ -22,11 +23,11 @@ class OpenAIService:
 
     def get_chat_completion(self, messages: List[Dict[str, str]], max_retries: int = 3) -> str:
         """
-        Generates a chat completion. 
-        Crucial: This method name matches what ChatService calls.
+        Generates a chat completion.
         """
         for attempt in range(max_retries):
             try:
+                # Synchronous call is fine here because we wrap it in an async service below
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
