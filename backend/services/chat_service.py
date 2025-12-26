@@ -78,7 +78,7 @@ class ChatService:
                     "i can only help" not in response_text.lower() and
                     "outside the scope" not in response_text.lower()):
                     # This appears to be a general knowledge response, replace with restriction message
-                    response_text = "I'm a Physics AI Teaching Assistant. I can only answer questions related to the textbook content. I cannot answer general knowledge questions that are outside the scope of the provided physics materials."
+                    response_text = "I'm a Physical AI Teaching Assistant. I can only answer questions related to the textbook content. I cannot answer general knowledge questions that are outside the scope of the provided physics materials."
 
             return ChatResponse(
                 response=response_text,
