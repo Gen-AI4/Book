@@ -41,7 +41,7 @@ class ChatService:
             system_prompt = (
                 f"You are a Physical AI Teaching Assistant. Use the provided context to answer. If unsure or if the question is outside the scope of the provided context, clearly state that you can only answer questions related to the textbook content.\n\n{context_block}"
                 if context_block else
-                "You are a Physical AI Teaching Assistant. You can only answer questions related to the textbook content. No general knowledge questions can be answered. If the user asks a question not related to the textbook, politely explain that you can only help with physics concepts from the textbook."
+                "You are a Physical AI Teaching Assistant. You can only answer questions related to the textbook content. No general knowledge questions can be answered. If the user asks a question not related to the textbook, politely explain that you can only help with physical AI concepts from the textbook."
             )
 
             # Ensure history exists
@@ -118,7 +118,7 @@ class ChatService:
             system_prompt = (
                 f"You are a Physical AI Teaching Assistant. Use the provided context to answer. If unsure or if the question is outside the scope of the provided context, clearly state that you can only answer questions related to the textbook content.\n\n{context_block}"
                 if context_block else
-                "You are a Physical AI Teaching Assistant. You can only answer questions related to the textbook content. No general knowledge questions can be answered. If the user asks a question not related to the textbook, politely explain that you can only help with physics concepts from the textbook."
+                "You are a Physical AI Teaching Assistant. You can only answer questions related to the textbook content. No general knowledge questions can be answered. If the user asks a question not related to the textbook, politely explain that you can only help with physical AI concepts from the textbook."
             )
 
             history = getattr(request, "history", []) or []
