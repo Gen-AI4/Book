@@ -16,7 +16,7 @@ class Settings(Settings):
 
     # OpenRouter settings
     openrouter_api_key: str = Field(alias="OPENROUTER_API_KEY")
-    openrouter_model: str = Field(default="openai/gpt-oss-20b:free", alias="OPENROUTER_MODEL")  # Free model from your example
+    openrouter_model: str = Field(default="xiaomi/mimo-v2-flash:free", alias="OPENROUTER_MODEL")  # Free model from your example
 
     # Cohere settings
     cohere_api_key: str = Field(alias="COHERE_API_KEY")
