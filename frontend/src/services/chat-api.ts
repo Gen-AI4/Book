@@ -36,26 +36,56 @@ const getApiBaseUrl = (): string => {
       return 'http://localhost:8000'; // Your local FastAPI backend
     }
 
-    // For production Vercel deployment, use the backend URL
-    // Update this with your actual deployed backend URL
-    // For now, using the Hugging Face Space URL as a fallback
-    return 'https://ahmedali021-the-book.hf.space';
+        // For production Vercel deployment, use the backend URL
+    // Update this with your actual deployed backend URL that is accessible from the web
+    // If your backend is deployed separately, use that URL
+    // If using Vercel's proxy or same domain, use relative path
+    const backendUrl = process.env.REACT_APP_API_URL || 'https://ahmedali021-the-book.hf.space';
+
+    // Log the backend URL being used for debugging
+    console.log('Using backend URL:', backendUrl);
+
+    return backendUrl;
   }
 
   // Fallback for server-side rendering
   return 'https://ahmedali021-the-book.hf.space';
 };
 
+// Check if backend is accessible
+export const checkBackendHealth = async (): Promise<boolean> => {
+  const API_BASE_URL = getApiBaseUrl();
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    return response.ok;
+  } catch (error) {
+    console.error('Backend health check failed:', error);
+    return false;
+  }
+};
+
 // Send chat message to backend
 export const sendChatMessage = async (
   request: ChatRequest,
-  timeout = 10000
+  timeout = 20000 // Increased timeout for backend processing
 ): Promise<ChatResponse> => {
   const API_BASE_URL = getApiBaseUrl();
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
 
   try {
+    console.log('Making request to:', `${API_BASE_URL}/chat`, 'with data:', request);
+
+    // Check if we're trying to reach the backend
+    if (!API_BASE_URL || API_BASE_URL === '') {
+      throw new Error('No backend API URL configured');
+    }
+
     const response = await fetch(`${API_BASE_URL}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -64,6 +94,7 @@ export const sendChatMessage = async (
     });
 
     clearTimeout(id);
+    console.log('Response received:', response.status, response);
 
     // If server returns error, read full text for debugging
     if (!response.ok) {
@@ -83,12 +114,20 @@ export const sendChatMessage = async (
 
     // Parse response JSON
     const data: ChatResponse = await response.json();
+    console.log('Response data:', data);
     return data;
 
   } catch (error: any) {
     clearTimeout(id);
-    if (error.name === 'AbortError') throw new Error('Request timed out');
-    if (error instanceof TypeError) throw new Error('Connection Failed');
+    console.error('API call failed:', error);
+
+    // Provide more specific error messages based on error type
+    if (error.name === 'AbortError') {
+      throw new Error('Request timed out - Backend may be slow to respond');
+    }
+    if (error instanceof TypeError) {
+      throw new Error('Connection failed - Backend service may be down. Please check if https://ahmedali021-the-book.hf.space is accessible.');
+    }
     throw error;
   }
 };

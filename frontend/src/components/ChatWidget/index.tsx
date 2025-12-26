@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { sendChatMessage, ChatRequest, ChatResponse, ChatError } from '../../services/chat-api';
+import { sendChatMessage, checkBackendHealth, ChatRequest, ChatResponse, ChatError } from '../../services/chat-api';
 import './ChatWidget.css';
 
 // Define TypeScript interfaces
@@ -19,9 +19,36 @@ const ChatWidget: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string>('');
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'ok' | 'error'>('checking');
 
   // Ref for auto-scrolling to bottom
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
+
+  // Check backend status on component mount
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        const isHealthy = await checkBackendHealth();
+        setBackendStatus(isHealthy ? 'ok' : 'error');
+
+        if (!isHealthy) {
+          // Add a system message to inform the user about backend status
+          const statusMessage: ChatMessage = {
+            id: `status-${Date.now()}`,
+            content: '⚠️ Backend service may be unavailable. Some features might not work properly.',
+            role: 'bot',
+            timestamp: new Date(),
+          };
+          setMessages(prev => [statusMessage]);
+        }
+      } catch (err) {
+        setBackendStatus('error');
+        console.error('Backend health check failed:', err);
+      }
+    };
+
+    checkBackend();
+  }, []);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -118,7 +145,16 @@ const ChatWidget: React.FC = () => {
       >
         {messages.length === 0 ? (
           <div className="welcome-message" role="status" aria-live="polite">
-            <p>Hello! How can I help you today?</p>
+            {backendStatus === 'checking' ? (
+              <p>Checking backend connection...</p>
+            ) : backendStatus === 'error' ? (
+              <div>
+                <p>⚠️ Backend service may be unavailable.</p>
+                <p>Please check if the backend service is running.</p>
+              </div>
+            ) : (
+              <p>Hello! How can I help you today?</p>
+            )}
           </div>
         ) : (
           messages.map((message) => (
