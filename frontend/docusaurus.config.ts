@@ -134,6 +134,11 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
+
+  // Pass environment variables to the client
+  clientModules: [
+    './src/clientModules/apiConfig.js',
+  ],
 };
 
 export default config;

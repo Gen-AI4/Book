@@ -20,7 +20,30 @@ export interface ChatError {
 
 // Browser-safe API URL
 const getApiBaseUrl = (): string => {
-  return (window as any).API_BASE_URL || 'https://ahmedali021-the-book.hf.space';
+  // Check if we're in a browser environment and if API_BASE_URL is defined
+  if (typeof window !== 'undefined' && (window as any).API_BASE_URL) {
+    return (window as any).API_BASE_URL;
+  }
+
+  // For production, use your deployed backend URL
+  // For Vercel deployment, you may need to set this to your actual backend URL
+  // Or use relative paths if your backend is properly configured with your frontend
+  if (typeof window !== 'undefined') {
+    const currentOrigin = window.location.origin;
+
+    // If we're on localhost, use local backend
+    if (currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')) {
+      return 'http://localhost:8000'; // Your local FastAPI backend
+    }
+
+    // For production Vercel deployment, use the backend URL
+    // Update this with your actual deployed backend URL
+    // For now, using the Hugging Face Space URL as a fallback
+    return 'https://ahmedali021-the-book.hf.space';
+  }
+
+  // Fallback for server-side rendering
+  return 'https://ahmedali021-the-book.hf.space';
 };
 
 // Send chat message to backend
