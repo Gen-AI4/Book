@@ -5,7 +5,7 @@ from backend.services.openai_service import OpenAIService
 
 logger = logging.getLogger(__name__)
 
-# --- UPDATED SYSTEM PROMPT ---
+# --- SYSTEM PROMPT ---
 SYSTEM_PROMPT = """You are an expert Teaching Assistant for a comprehensive textbook on Physical AI & Humanoid Robotics.
 Your goal is to help students understand complex concepts in robotics, sim-to-real transfer, embodied intelligence, and hardware integration.
 
@@ -16,50 +16,62 @@ Instructions:
 4. When explaining technical terms (like 'Zero-Shot Transfer', 'Domain Randomization', or 'Sim-to-Real'), provide clear definitions from the text.
 5. Do not identify yourself as a "Physics" assistant; you are a "Physical AI & Robotics" assistant.
 """
-# -----------------------------
+# ---------------------
 
 class ChatService:
     def __init__(self):
         self.context_service = ContextRetrievalService()
         self.openai_service = OpenAIService()
 
-    # RENAMED FUNCTION FROM generate_response TO process_chat_request
-    def process_chat_request(self, message: str, chat_history: List[Dict[str, str]] = None) -> str:
+    # NOTE: We added 'async' here to fix the 'await' error in app.py
+    async def process_chat_request(self, message: Any, chat_history: List[Dict[str, str]] = None) -> str:
         """
         Generate a response using RAG (Retrieval Augmented Generation)
         """
         try:
-            # 1. Retrieve relevant context
-            context_results = self.context_service.retrieve_context(message)
+            # 1. SAFETY: Ensure message is a string (Fixes Cohere 422 Error)
+            query_text = ""
+            if isinstance(message, str):
+                query_text = message
+            elif isinstance(message, dict):
+                query_text = message.get("message") or message.get("content") or str(message)
+            else:
+                # Handle Pydantic models or other objects
+                query_text = getattr(message, "message", str(message))
+
+            logger.info(f"Processing query: {query_text}")
+
+            # 2. Retrieve relevant context
+            context_results = self.context_service.retrieve_context(query_text)
             context_block = self.context_service.construct_context_block(context_results)
 
-            # 2. Prepare messages for the LLM
+            # 3. Prepare messages for the LLM
             messages = [
                 {"role": "system", "content": SYSTEM_PROMPT},
             ]
 
-            # Add chat history if available (optional, for context)
+            # Add chat history if available
             if chat_history:
-                for msg in chat_history[-4:]: # Keep last 4 messages for context window
+                for msg in chat_history[-4:]: 
                     messages.append(msg)
 
-            # 3. Add the user's current query with the retrieved context
+            # 4. Add the user's query with the retrieved context
             user_content = f"""
             Context information is below.
             ---------------------
             {context_block}
             ---------------------
             Given the context information and not prior knowledge, answer the query.
-            Query: {message}
+            Query: {query_text}
             """
             
             messages.append({"role": "user", "content": user_content})
 
-            # 4. Generate response using OpenAIService
+            # 5. Generate response (No 'await' needed here unless OpenAIService is async)
             response = self.openai_service.get_chat_completion(messages)
             
             return response
 
         except Exception as e:
-            logger.error(f"Error generating response: {str(e)}")
-            return "I apologize, but I encountered an error while processing your request. Please try again."
+            logger.error(f"Error processing chat request: {str(e)}")
+            return "I apologize, but I encountered an internal error. Please check the server logs."
