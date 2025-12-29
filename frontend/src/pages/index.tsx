@@ -5,7 +5,6 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 
-import ChatWidget from '../components/ChatWidget';
 import styles from './index.module.css';
 
 function HomepageHeader() {
@@ -80,11 +79,6 @@ export default function Home(): ReactNode {
       description="A comprehensive textbook on building intelligent humanoid robots that bridge the gap between artificial intelligence and physical reality">
       <HomepageHeader />
       <main>
-        <HomepageModules />
-        <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-          <h2>Chat with the AI Assistant</h2>
-          <ChatWidget />
-        </div>
       </main>
     </Layout>
   );

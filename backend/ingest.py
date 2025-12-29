@@ -21,42 +21,70 @@ logger = logging.getLogger(__name__)
 
 def get_all_urls(base_url: str) -> List[str]:
     """
-    Retrieves all textbook page URLs from the deployed site.
+    Retrieves all textbook page URLs from the deployed site by crawling recursively.
     """
     logger.info(f"Fetching URLs from base URL: {base_url}")
 
-    try:
-        response = requests.get(base_url)
-        response.raise_for_status()
+    all_urls = set()
+    visited_urls = set()
+    urls_to_visit = [base_url]
 
-        soup = BeautifulSoup(response.text, 'html.parser')
-        urls = set()
+    # Limit the crawl to prevent infinite loops
+    max_urls = 100
+    crawl_depth = 2  # Limit depth to avoid crawling too deep
 
-        # Find all links in the navigation or content area
-        # For Docusaurus sites, common patterns include:
-        # - Links in the sidebar navigation
-        # - Links in the main content area
-        for link in soup.find_all('a', href=True):
-            href = link['href']
+    while urls_to_visit and len(all_urls) < max_urls:
+        current_url = urls_to_visit.pop(0)
 
-            # Convert relative URLs to absolute URLs
-            if href.startswith('/'):
-                full_url = base_url.rstrip('/') + href
-            elif href.startswith(base_url):
-                full_url = href
-            else:
-                continue  # Skip external links
+        if current_url in visited_urls:
+            continue
 
-            # Filter for textbook content pages (not navigation, etc.)
-            if '/docs/' in full_url or full_url.endswith('.html') or full_url.count('/') >= 3:
-                urls.add(full_url)
+        visited_urls.add(current_url)
 
-        logger.info(f"Found {len(urls)} URLs")
-        return list(urls)
+        try:
+            response = requests.get(current_url)
+            response.raise_for_status()
 
-    except requests.RequestException as e:
-        logger.error(f"Error fetching URLs from {base_url}: {e}")
-        raise e
+            soup = BeautifulSoup(response.text, 'html.parser')
+
+            # Find all links on the current page
+            for link in soup.find_all('a', href=True):
+                href = link['href']
+
+                # Convert relative URLs to absolute URLs
+                if href.startswith('/'):
+                    full_url = base_url.rstrip('/') + href
+                elif href.startswith(base_url):
+                    full_url = href
+                elif href.startswith('http'):
+                    # Skip external links
+                    continue
+                else:
+                    # Handle relative links from current URL
+                    from urllib.parse import urljoin
+                    full_url = urljoin(current_url, href)
+
+                # Remove anchor links (fragments) to get unique pages
+                clean_url = full_url.split('#')[0]
+
+                # Add to collection if it's a documentation page
+                if '/docs/' in clean_url:
+                    all_urls.add(clean_url)
+                    # Add to queue for further crawling if not already visited
+                    if clean_url not in visited_urls and len(all_urls) < max_urls:
+                        urls_to_visit.append(clean_url)
+                elif clean_url == base_url or (clean_url.startswith(base_url) and
+                                             not any(excluded in clean_url for excluded in ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.zip', '.css', '.js'])):
+                    # Add other site pages that might link to docs, but not static assets
+                    if clean_url not in visited_urls and len(visited_urls) < max_urls:
+                        urls_to_visit.append(clean_url)
+
+        except requests.RequestException as e:
+            logger.error(f"Error fetching URL {current_url}: {e}")
+            continue  # Continue with other URLs
+
+    logger.info(f"Found {len(all_urls)} URLs")
+    return list(all_urls)
 
 def extract_text_from_url(url: str) -> str:
     """

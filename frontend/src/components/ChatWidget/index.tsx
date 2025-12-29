@@ -19,22 +19,48 @@ const ChatWidget: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string>('');
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [selectedText, setSelectedText] = useState<string>('');
 
   // Ref for auto-scrolling to bottom
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (isOpen) {
+      scrollToBottom();
+    }
+  }, [messages, isOpen]);
+
+  // Handle text selection
+  useEffect(() => {
+    const handleSelection = () => {
+      const selection = window.getSelection();
+      if (selection && selection.toString().trim() !== '') {
+        const selectedText = selection.toString();
+        if (selectedText.length > 0 && selectedText.length < 500) { // Limit to reasonable selection size
+          setSelectedText(selectedText);
+        }
+      }
+    };
+
+    document.addEventListener('mouseup', handleSelection);
+    document.addEventListener('keyup', handleSelection);
+
+    return () => {
+      document.removeEventListener('mouseup', handleSelection);
+      document.removeEventListener('keyup', handleSelection);
+    };
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   // Function to send message to backend
-  const sendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+  const sendMessage = async (messageText?: string) => {
+    const textToSend = messageText || inputValue;
+    if (!textToSend.trim() || isLoading) return;
 
     try {
       // Clear any previous errors
@@ -43,22 +69,29 @@ const ChatWidget: React.FC = () => {
       // Add user message to UI immediately
       const userMessage: ChatMessage = {
         id: Date.now().toString(),
-        content: inputValue,
+        content: textToSend,
         role: 'user',
         timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, userMessage]);
 
-      // Clear input field immediately after sending
-      setInputValue('');
+      // Clear input field if not triggered by text selection
+      if (!messageText) {
+        setInputValue('');
+      }
+
+      // Clear selected text after sending
+      if (messageText) {
+        setSelectedText('');
+      }
 
       // Set loading state
       setIsLoading(true);
 
       // Prepare the API request
       const requestBody: ChatRequest = {
-        message: inputValue,
+        message: textToSend,
         session_id: sessionId || undefined, // Send session_id if we have one, otherwise let backend generate
       };
 
@@ -103,11 +136,64 @@ const ChatWidget: React.FC = () => {
     sendMessage();
   };
 
-  return (
-    <div className="chat-widget" role="main" aria-label="Chat interface">
-      <div className="chat-header" role="banner">
-        <h3>Cyber Chat</h3>
+  // Handle selected text click (send selected text to chat)
+  const handleSelectedTextClick = () => {
+    if (selectedText) {
+      sendMessage(selectedText);
+    }
+  };
+
+  // Toggle chat window open/close
+  const toggleChat = () => {
+    setIsOpen(!isOpen);
+  };
+
+  // Close chat window
+  const closeChat = () => {
+    setIsOpen(false);
+  };
+
+  // If chat is closed, show only the floating button
+  if (!isOpen) {
+    return (
+      <div className="chat-fab" onClick={toggleChat} role="button" aria-label="Open chat">
+        <div className="chat-icon">🤖</div>
       </div>
+    );
+  }
+
+  // If chat is open, show the full chat widget
+  return (
+    <div className="chat-popup" role="main" aria-label="Chat interface">
+      <div className="chat-header" role="banner">
+        <div className="header-info">
+          <h3>AI Assistant</h3>
+          <p>
+            <span className="status-indicator" aria-label="Online"></span> RAG Chatbot
+          </p>
+        </div>
+        <button
+          className="close-button"
+          onClick={closeChat}
+          aria-label="Close chat"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Selected Text Display */}
+      {selectedText && (
+        <div className="selected-text-preview">
+          <p><strong>Selected text:</strong> "{selectedText.substring(0, 100)}{selectedText.length > 100 ? '...' : ''}"</p>
+          <button
+            className="use-selection-button"
+            onClick={handleSelectedTextClick}
+            disabled={isLoading}
+          >
+            Ask AI about this
+          </button>
+        </div>
+      )}
 
       <div
         className="chat-messages"
@@ -133,8 +219,9 @@ const ChatWidget: React.FC = () => {
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      code({node, inline, className, children, ...props}) {
+                      code({node, className, children, ...props}) {
                         const match = /language-(\w+)/.exec(className || '');
+                        const inline = !match;
                         return !inline && match ? (
                           <pre className={className} role="code">
                             <code {...props}>{children}</code>
@@ -160,7 +247,11 @@ const ChatWidget: React.FC = () => {
         {isLoading && (
           <div className="message bot-message" role="status" aria-live="polite">
             <div className="message-content">
-              <span className="typing-indicator" aria-label="Bot is typing">Typing...</span>
+              <span className="typing-indicator" aria-label="Bot is typing">
+                <span>Typing</span>
+                <span></span>
+                <span></span>
+              </span>
             </div>
           </div>
         )}
@@ -177,7 +268,7 @@ const ChatWidget: React.FC = () => {
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Type your message..."
+          placeholder="Type a message"
           disabled={isLoading}
           className="chat-input"
           aria-label="Type your message"
@@ -191,7 +282,9 @@ const ChatWidget: React.FC = () => {
           className="send-button"
           aria-label="Send message"
         >
-          Send
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+          </svg>
         </button>
       </form>
 
