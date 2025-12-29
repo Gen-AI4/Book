@@ -51,7 +51,10 @@ const config: Config = {
         },
         blog: false, // Explicitly disable blog functionality since blog directory was removed
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: [
+            './src/css/custom.css',
+            './src/css/tailwind.css', // Tailwind CSS import
+          ],
         },
       } satisfies Preset.Options,
     ],

@@ -4,57 +4,328 @@
  * work well for content-centric websites.
  */
 
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap');
+
 @import url('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css');
 
-/* You can override the default Infima variables here. */
+/* Cyberpunk Theme Variables */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  /* Cyberpunk Color Palette */
+  --cyber-black: #000000;
+  --cyber-neon-green: #39FF14;
+  --cyber-neon-blue: #00FFFF;
+  --cyber-neon-purple: #8A2BE2;
+  --cyber-red: #FF0000;
+
+  /* Override Infima variables for cyberpunk theme */
+  --ifm-color-primary: var(--cyber-neon-green);
+  --ifm-color-primary-dark: #32e012;
+  --ifm-color-primary-darker: #2fda11;
+  --ifm-color-primary-darkest: #28b50e;
+  --ifm-color-primary-light: #4cff28;
+  --ifm-color-primary-lighter: #56ff3c;
+  --ifm-color-primary-lightest: #73ff61;
+
+  /* Backgrounds */
+  --ifm-background-color: var(--cyber-black);
+  --ifm-background-surface-color: #0a0a0a;
+
+  /* Code styling */
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(57, 255, 20, 0.1);
+
+  /* Typography */
+  --ifm-font-family-base: 'JetBrains Mono', monospace;
+  --ifm-font-family-heading: 'Orbitron', sans-serif;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* Dark mode (now default) */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: var(--cyber-neon-green);
+  --ifm-color-primary-dark: #32e012;
+  --ifm-color-primary-darker: #2fda11;
+  --ifm-color-primary-darkest: #28b50e;
+  --ifm-color-primary-light: #4cff28;
+  --ifm-color-primary-lighter: #56ff3c;
+  --ifm-color-primary-lightest: #73ff61;
+
+  --ifm-background-color: var(--cyber-black);
+  --ifm-background-surface-color: #0a0a0a;
+  --docusaurus-highlighted-code-line-bg: rgba(57, 255, 20, 0.1);
+}
+
+/* Glitch text animation keyframes */
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-3px, 3px);
+  }
+  40% {
+    transform: translate(-3px, -3px);
+  }
+  60% {
+    transform: translate(3px, 3px);
+  }
+  80% {
+    transform: translate(3px, -3px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+/* Scanline animation keyframes */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+/* Glitch text effect */
+.glitch-text {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  left: 2px;
+  text-shadow: -1px 0 var(--cyber-red);
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+  left: -2px;
+  text-shadow: -1px 0 var(--cyber-neon-blue);
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+  0% {
+    clip: rect(42px, 9999px, 44px, 0);
+  }
+  10% {
+    clip: rect(12px, 9999px, 59px, 0);
+  }
+  20% {
+    clip: rect(48px, 9999px, 29px, 0);
+  }
+  30% {
+    clip: rect(42px, 9999px, 73px, 0);
+  }
+  40% {
+    clip: rect(63px, 9999px, 27px, 0);
+  }
+  50% {
+    clip: rect(34px, 9999px, 55px, 0);
+  }
+  60% {
+    clip: rect(86px, 9999px, 73px, 0);
+  }
+  70% {
+    clip: rect(20px, 9999px, 20px, 0);
+  }
+  80% {
+    clip: rect(26px, 9999px, 60px, 0);
+  }
+  90% {
+    clip: rect(25px, 9999px, 66px, 0);
+  }
+  100% {
+    clip: rect(76px, 9999px, 79px, 0);
+  }
+}
+
+/* Glow effect utility class */
+.glow {
+  box-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 20px currentColor;
+  transition: box-shadow 0.3s ease;
+}
+
+.glow:hover {
+  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+}
+
+/* Neon glow effect */
+.glow-neon {
+  box-shadow: 0 0 5px var(--cyber-neon-green), 0 0 10px var(--cyber-neon-green), 0 0 20px var(--cyber-neon-green);
+  transition: box-shadow 0.3s ease;
+}
+
+.glow-neon:hover {
+  box-shadow: 0 0 10px var(--cyber-neon-green), 0 0 20px var(--cyber-neon-green), 0 0 30px var(--cyber-neon-green);
+}
+
+/* Scanline overlay effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      rgba(0, 255, 0, 0.05) 50%
+    );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+}
+
+/* Chamfered corners using clip-path */
+.chamfered {
+  clip-path: polygon(
+    0% 10px,
+    10px 0%,
+    calc(100% - 10px) 0%,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0% calc(100% - 10px)
+  );
+}
+
+/* Apply chamfered corners to headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--ifm-font-family-heading);
+  text-shadow: 0 0 5px var(--cyber-neon-green), 0 0 10px var(--cyber-neon-green);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Reduced motion support for glitch animations */
+@media (prefers-reduced-motion: reduce) {
+  .glitch-text,
+  .glitch,
+  body::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Configurable glitch animations */
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+}
+
+.glitch::before {
+  left: 2px;
+  text-shadow: -1px 0 var(--cyber-red);
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+  left: -2px;
+  text-shadow: -1px 0 var(--cyber-neon-blue);
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+/* Performance-optimized glitch animations using CSS containment */
+.glitch-contained {
+  contain: layout style paint;
+}
+
+/* Font classes for use in JSX */
+.font-orbitron {
+  font-family: var(--ifm-font-family-heading) !important;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.font-jetbrains-mono {
+  font-family: var(--ifm-font-family-base) !important;
 }
 
 /* Custom hardware admonition styling */
 .admonition-hardware {
-  border-left: 4px solid #f59f00; /* Orange accent */
-  background-color: #fff3cd; /* Light yellow background */
-  border-color: #f59f00;
+  border-left: 4px solid var(--cyber-neon-blue); /* Cyberpunk blue accent */
+  background-color: rgba(0, 20, 30, 0.7); /* Dark blue background */
+  border-color: var(--cyber-neon-blue);
 }
 
 [data-theme='dark'] .admonition-hardware {
-  background-color: #4a3f0f; /* Dark yellow background */
-  border-color: #ffa726; /* Lighter orange for dark mode */
+  background-color: rgba(0, 20, 30, 0.7); /* Dark blue background */
+  border-color: var(--cyber-neon-blue); /* Cyberpunk blue accent */
 }
 
 .admonition-hardware .admonition-heading {
-  color: #856404; /* Darker orange for heading */
+  color: var(--cyber-neon-blue); /* Cyberpunk blue for heading */
 }
 
 [data-theme='dark'] .admonition-hardware .admonition-heading {
-  color: #ffa726; /* Light orange for dark mode heading */
+  color: var(--cyber-neon-blue); /* Cyberpunk blue for heading */
 }
 
 .admonition-hardware .admonition-icon {
-  color: #f59f00; /* Orange icon */
+  color: var(--cyber-neon-blue); /* Cyberpunk blue icon */
 }
 
 [data-theme='dark'] .admonition-hardware .admonition-icon {
-  color: #ffa726; /* Lighter orange icon for dark mode */
+  color: var(--cyber-neon-blue); /* Cyberpunk blue icon */
+}
+
+/* General admonition styling for cyberpunk theme */
+.admonition {
+  border-radius: 0; /* No rounded corners - use chamfered instead */
+  border-left: 4px solid var(--cyber-neon-green);
+  background-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+}
+
+.admonition--note {
+  border-left-color: var(--cyber-neon-blue);
+}
+
+.admonition--tip {
+  border-left-color: var(--cyber-neon-green);
+}
+
+.admonition--caution {
+  border-left-color: var(--cyber-neon-purple);
+}
+
+.admonition--danger {
+  border-left-color: var(--cyber-red);
+}
+
+.admonition-heading h5 {
+  color: var(--cyber-neon-green);
+  font-family: var(--ifm-font-family-heading);
+  text-shadow: 0 0 5px var(--cyber-neon-green);
 }

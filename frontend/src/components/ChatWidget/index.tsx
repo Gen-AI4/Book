@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import clsx from 'clsx';
 import { sendChatMessage, checkBackendHealth, ChatRequest, ChatResponse, ChatError } from '../../services/chat-api';
 import './ChatWidget.css';
 
@@ -14,7 +15,14 @@ interface ChatMessage {
 
 const ChatWidget: React.FC = () => {
   // State management
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      id: '1',
+      content: 'Welcome to the Physical AI & Humanoid Robotics textbook assistant. How can I help you today?',
+      role: 'bot',
+      timestamp: new Date(),
+    }
+  ]);
   const [inputValue, setInputValue] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +49,7 @@ const ChatWidget: React.FC = () => {
             role: 'bot',
             timestamp: new Date(),
           };
-          setMessages(prev => [statusMessage]);
+          setMessages(prev => [...prev, statusMessage]);
         }
       } catch (err) {
         setBackendStatus('error');
