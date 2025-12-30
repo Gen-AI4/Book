@@ -148,12 +148,17 @@ const ChatWidget: React.FC = () => {
       setMessages(prev => [...prev, botMessage]);
     } catch (err) {
       console.error('Error sending message:', err);
-      const errorMessageText = err instanceof Error ? err.message : 'Connection Failed';
+      const errorMessageText = err instanceof Error ? err.message : 'Connection Failed - Please check if the backend service is running.';
+
+      // Check if the error is specifically related to backend connectivity
+      const isConnectionError = errorMessageText.includes('Connection failed') || errorMessageText.includes('backend service may be down');
 
       // Add error message to UI
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
-        content: errorMessageText,
+        content: isConnectionError
+          ? `${errorMessageText}\n\n💡 Tip: Make sure the backend service is running. If developing locally, start the backend with 'python -m uvicorn backend.main:app --reload --port 8000'`
+          : errorMessageText,
         role: 'bot',
         timestamp: new Date(),
       };

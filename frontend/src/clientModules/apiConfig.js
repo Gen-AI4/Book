@@ -5,12 +5,14 @@
 if (typeof window !== 'undefined') {
   // For production, use the environment variable or fallback to the Hugging Face Space
   // For development, use localhost
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment = process.env.NODE_ENV === 'development' || window.location.hostname.includes('localhost');
 
   if (!window.API_BASE_URL) {
-    window.API_BASE_URL = isDevelopment
-      ? 'http://localhost:8000'
-      : process.env.API_BASE_URL || 'https://ahmedali021-the-book.hf.space';
+    // Check for REACT_APP_API_URL environment variable first
+    const envApiUrl = process.env.REACT_APP_API_URL;
+
+    window.API_BASE_URL = envApiUrl ||
+                          (isDevelopment ? 'http://localhost:8000' : 'https://ahmedali021-the-book.hf.space');
   }
 }
 

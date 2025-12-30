@@ -36,11 +36,26 @@ const getApiBaseUrl = (): string => {
       return 'http://localhost:8000'; // Your local FastAPI backend
     }
 
-        // For production Vercel deployment, use the backend URL
-    // Update this with your actual deployed backend URL that is accessible from the web
-    // If your backend is deployed separately, use that URL
-    // If using Vercel's proxy or same domain, use relative path
-    const backendUrl = process.env.REACT_APP_API_URL || 'https://ahmedali021-the-book.hf.space';
+    // For production deployment, use environment variable if available
+    if (process.env.REACT_APP_API_URL) {
+      return process.env.REACT_APP_API_URL;
+    }
+
+    // Check for common deployment patterns
+    if (currentOrigin.includes('vercel.app')) {
+      // If on Vercel, you might need to deploy backend separately
+      // Try to use the Hugging Face Space as fallback, but also consider other options
+      return 'https://ahmedali021-the-book.hf.space';
+    } else if (currentOrigin.includes('netlify.app')) {
+      // If on Netlify, use appropriate backend URL
+      return 'https://ahmedali021-the-book.hf.space';
+    } else if (currentOrigin.includes('github.io')) {
+      // If on GitHub Pages, use appropriate backend URL
+      return 'https://ahmedali021-the-book.hf.space';
+    }
+
+    // Fallback to the original URL
+    const backendUrl = 'https://ahmedali021-the-book.hf.space';
 
     // Log the backend URL being used for debugging
     console.log('Using backend URL:', backendUrl);
@@ -126,7 +141,7 @@ export const sendChatMessage = async (
       throw new Error('Request timed out - Backend may be slow to respond');
     }
     if (error instanceof TypeError) {
-      throw new Error('Connection failed - Backend service may be down. Please check if https://ahmedali021-the-book.hf.space is accessible.');
+      throw new Error('Connection failed - Backend service may be down. Please ensure the backend service is running and accessible. If running locally, make sure the backend is started on http://localhost:8000.');
     }
     throw error;
   }
